@@ -7,7 +7,7 @@ echo -n "Do you want to install Bluetooth Audio (PulseAudio)? [y/N] "
 read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
-apt install -y --no-install-recommends bluez-tools pulseaudio-module-bluetooth
+apt install -y --no-install-recommends bluez-tools alsa-utils
 
 # Bluetooth settings
 cat <<'EOF' > /etc/bluetooth/main.conf
@@ -47,12 +47,12 @@ EOF
 systemctl daemon-reload
 systemctl enable bt-agent@hci0.service
 
-usermod -a -G bluetooth pulse
+# ALSA settings
+sed -i.orig 's/^options snd-usb-audio index=-2$/#options snd-usb-audio index=-2/' /lib/modprobe.d/aliases.conf
 
-# PulseAudio settings
-#sed -i.orig 's/^load-module module-udev-detect$/load-module module-udev-detect tsched=0/' /etc/pulse/system.pa
-echo "load-module module-bluetooth-policy" >> /etc/pulse/system.pa
-echo "load-module module-bluetooth-discover" >> /etc/pulse/system.pa
+# BlueALSA
+systemctl daemon-reload
+systemctl enable bluealsa-aplay
 
 # Bluetooth udev script
 cat <<'EOF' > /usr/local/bin/bluetooth-udev
@@ -64,12 +64,12 @@ action=$(expr "$ACTION" : "\([a-zA-Z]\+\).*")
 if [ "$action" = "add" ]; then
     bluetoothctl discoverable off
     # disconnect wifi to prevent dropouts
-    #ifconfig wlan0 down &
+    ip link set wlan0 down &
 fi
 
 if [ "$action" = "remove" ]; then
     # reenable wifi
-    #ifconfig wlan0 up &
+    ip link set wlan0 up &
     bluetoothctl discoverable on
 fi
 EOF
