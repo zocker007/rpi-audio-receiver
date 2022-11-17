@@ -60,7 +60,7 @@ install_bluetooth() {
         sudo apt install -y --no-install-recommends libasound2 libbluetooth3 libglib2.0-0 libsbc1 libdbus-1-3 libopenaptx0 libfdk-aac2
         sudo cp -r bluealsa/* /
     else
-        sudo apt-get install -y git automake build-essential libtool pkg-config python3-docutils
+        sudo apt-get install -y --no-install-recommends git automake build-essential libtool pkg-config python3-docutils
         sudo apt install -y libasound2-dev libbluetooth-dev libdbus-1-dev libglib2.0-dev libsbc-dev libopenaptx-dev libfdk-aac-dev
 
         git clone https://github.com/Arkq/bluez-alsa.git
