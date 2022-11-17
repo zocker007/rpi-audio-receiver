@@ -70,14 +70,13 @@ KillSignal=SIGUSR1
 [Install]
 WantedBy=multi-user.target
 EOF
-systemctl daemon-reload
-systemctl enable bt-agent@hci0.service
 
 # ALSA settings
 sed -i.orig 's/^options snd-usb-audio index=-2$/#options snd-usb-audio index=-2/' /lib/modprobe.d/aliases.conf
 
 # BlueALSA
 systemctl daemon-reload
+systemctl enable bt-agent@hci0.service
 systemctl enable bluealsa
 systemctl enable bluealsa-aplay
 
