@@ -3,11 +3,37 @@
 if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
 
 echo
-echo -n "Do you want to install Bluetooth Audio (PulseAudio)? [y/N] "
+echo "In the following, bluez-alsa (https://github.com/Arkq/bluez-alsa.git) will be build from source."
+echo "You can use a chroot'ed installation of bluez-alsa in ../bluealsa/ that was build on a remote machine to continue without building from source."
+echo "Instructions on how to build from source can be found here: https://github.com/Arkq/bluez-alsa/wiki/Installation-from-source."
+echo -n "Do you want to install Bluetooth Audio (BlueALSA)? [y/N] "
 read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
-apt install -y --no-install-recommends bluez-tools alsa-utils
+adduser --system --group --no-create-home bluealsa
+adduser bluealsa audio
+cd ..
+
+if [ -d "bluealsa" ]; then
+    apt install -y --no-install-recommends alsa-utils bluez-tools libasound2 libbluetooth3 libglib2.0-0 libsbc1 libdbus-1-3 libopenaptx0 libfdk-aac2
+    cp -r bluealsa/* /
+else
+    apt install -y --no-install-recommends alsa-utils bluez-tools sudo apt-get install git automake build-essential libtool pkg-config python3-docutils
+    apt install -y libasound2-dev libbluetooth-dev libdbus-1-dev libglib2.0-dev libsbc-dev libopenaptx-dev libfdk-aac-dev
+
+    git clone https://github.com/Arkq/bluez-alsa.git
+    cd bluez-alsa
+
+    autoreconf --install --force
+    mkdir build
+    cd build
+    ../configure --enable-aac --enable-aptx --enable-aptx-hd --with-libopenaptx --enable-faststream --enable-systemd --enable-upower \
+    --with-systemdbluealsaargs="-p a2dp-sink --a2dp-force-audio-cd --a2dp-volume --codec=aptX --codec=aptX-HD --codec=FastStream --xapl-resp-name=<devicename>" \
+    --with-systemdbluealsaaplayargs="--single-audio --pcm=hw:0\,0 --mixer-device=hw:0 --mixer-name=Master" \
+    --with-bluealsauser=bluealsa --with-bluealsaaplayuser=bluealsa
+    make -j4
+    make install
+fi
 
 # Bluetooth settings
 cat <<'EOF' > /etc/bluetooth/main.conf
@@ -52,6 +78,7 @@ sed -i.orig 's/^options snd-usb-audio index=-2$/#options snd-usb-audio index=-2/
 
 # BlueALSA
 systemctl daemon-reload
+systemctl enable bluealsa
 systemctl enable bluealsa-aplay
 
 # Bluetooth udev script

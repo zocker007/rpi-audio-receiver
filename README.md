@@ -1,6 +1,25 @@
 # Raspberry Pi Audio Receiver
 
-A simple, light weight audio receiver with Bluetooth (A2DP), AirPlay 1, and Spotify Connect.
+A simple, light weight audio receiver with Bluetooth (A2DP), AirPlay 1, Spotify Connect and UPnP.
+
+## ⚠️ A note on Raspberry Pi OS Bullseye
+
+The current version of Raspberry Pi OS (2021-10-30) is based on Debian 11 (Bullseye). This version does not contain the BlueALSA package (`bluealsa`) anymore. So this script will downlaod bluez-alsa sources from https://github.com/Arkq/bluez-alsa.git and build from source. You can also build bluez-alsa on another machine (like cross building or to keep target machine clean). For this you can build into a chroot'ed install dir and copy this chroot to the target machine into ../bluealsa relative to this script. It will detect this and only copy the chroot to local '/' and install neccessary dependencies. To build with chroot and copy the install dir you can do for example:
+
+    mkdir build
+    cd build
+    INSTALLROOT=$HOME/bluealsa
+    mkdir -p $INSTALLROOT
+    ../configure --prefix=$INSTALLROOT/usr --with-systemdsystemunitdir=$INSTALLROOT/usr/lib/systemd/system --with-dbusconfdir=$INSTALLROOT/etc/dbus-1/system.d \
+    --with-alsaplugindir=$INSTALLROOT/usr/lib/aarch64-linux-gnu/alsa-lib --with-alsaconfdir=$INSTALLROOT/etc/alsa/conf.d --enable-aac --enable-aptx --enable-aptx-hd \
+    --with-libopenaptx --enable-faststream --enable-systemd --enable-upower --with-systemdbluealsaargs="-p a2dp-sink --a2dp-force-audio-cd --a2dp-volume --codec=aptX \
+    --codec=aptX-HD --codec=FastStream --xapl-resp-name=<devicename>"  --with-systemdbluealsaaplayargs="--single-audio --pcm=hw:<alsacardname>\,0 --mixer-device=hw:<alsacardname> \
+    --mixer-name=Master" --with-bluealsauser=bluealsa --with-bluealsaaplayuser=bluealsa
+    make -j4
+    make install
+    scp -r $INSTALLROOT <user>@<host>:/home/<user>/
+
+You may alternatively want to try [HiFiBerryOS](https://github.com/hifiberry/hifiberry-os/) for similar functionality.
 
 ## Features
 
@@ -24,11 +43,11 @@ For these devices, you might want to try [HiFiBerryOS](https://github.com/hifibe
 
 The installation script asks whether to install each component.
 
-    wget -q https://github.com/nicokaiser/rpi-audio-receiver/archive/debian-10.zip
-    unzip debian-10.zip
-    rm debian-10.zip
+    wget -q https://github.com/nicokaiser/rpi-audio-receiver/archive/bluez-alsa.zip
+    unzip bluez-alsa.zip
+    rm bluez-alsa.zip
 
-    cd rpi-audio-receiver-main
+    cd rpi-audio-receiver-bluez-alsa
     sudo ./install.sh
 
     reboot
