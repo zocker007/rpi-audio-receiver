@@ -18,7 +18,7 @@ if [ -d "bluealsa" ]; then
     apt install -y --no-install-recommends alsa-utils bluez-tools libasound2 libbluetooth3 libglib2.0-0 libsbc1 libdbus-1-3 libopenaptx0 libfdk-aac2
     cp -r bluealsa/* /
 else
-    apt install -y --no-install-recommends alsa-utils bluez-tools sudo apt-get install git automake build-essential libtool pkg-config python3-docutils
+    apt install -y --no-install-recommends alsa-utils bluez-tools git automake build-essential libtool pkg-config python3-docutils
     apt install -y libasound2-dev libbluetooth-dev libdbus-1-dev libglib2.0-dev libsbc-dev libopenaptx-dev libfdk-aac-dev
 
     git clone https://github.com/Arkq/bluez-alsa.git
