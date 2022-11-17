@@ -1,6 +1,23 @@
 # Raspberry Pi Audio Receiver
 
-A simple, light weight audio receiver with Bluetooth (A2DP), AirPlay 2, and Spotify Connect.
+A simple, light weight audio receiver with Bluetooth (A2DP), AirPlay 2 and Spotify Connect.
+
+This script can downlaod bluez-alsa sources from https://github.com/Arkq/bluez-alsa.git and build from source. You can also build bluez-alsa on another machine (like cross building or to keep target machine clean). For this you can build into a chroot'ed install dir and copy this chroot to the target machine into ../bluealsa relative to this script. It will detect this and only copy the chroot to local '/' and install neccessary dependencies. To build with chroot and copy the install dir you can do for example:
+
+    mkdir build
+    cd build
+    INSTALLROOT=$HOME/bluealsa
+    mkdir -p $INSTALLROOT
+    ../configure --prefix=$INSTALLROOT/usr --with-systemdsystemunitdir=$INSTALLROOT/usr/lib/systemd/system --with-dbusconfdir=$INSTALLROOT/etc/dbus-1/system.d \
+    --with-alsaplugindir=$INSTALLROOT/usr/lib/aarch64-linux-gnu/alsa-lib --with-alsaconfdir=$INSTALLROOT/etc/alsa/conf.d --enable-aac --enable-aptx --enable-aptx-hd \
+    --with-libopenaptx --enable-faststream --enable-systemd --enable-upower --with-systemdbluealsaargs="-p a2dp-sink --a2dp-force-audio-cd --a2dp-volume --codec=aptX \
+    --codec=aptX-HD --codec=FastStream --xapl-resp-name=<devicename>"  --with-systemdbluealsaaplayargs="--single-audio --pcm=hw:<alsacardname>\,0 --mixer-device=hw:<alsacardname> \
+    --mixer-name=Master" --with-bluealsauser=bluealsa --with-bluealsaaplayuser=bluealsa
+    make -j4
+    make install
+    scp -r $INSTALLROOT <user>@<host>:/home/<user>/
+
+You may alternatively want to try [HiFiBerryOS](https://github.com/hifiberry/hifiberry-os/) for similar functionality.
 
 ## Features
 
@@ -18,10 +35,8 @@ Devices like phones, tablets and computers can play audio via this receiver.
 
 The installation script asks whether to install each component.
 
-    wget https://raw.githubusercontent.com/nicokaiser/rpi-audio-receiver/main/install.sh
+    wget https://raw.githubusercontent.com/zocker007/rpi-audio-receiver/main/install.sh
     bash install.sh
-
-**Note**: the installation process is not reversible, there is no uninstall. The script is meant to be run on a clean device that is not used for anything else.
 
 ### Basic setup
 
