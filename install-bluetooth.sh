@@ -71,6 +71,25 @@ KillSignal=SIGUSR1
 WantedBy=multi-user.target
 EOF
 
+cat <<'EOF' > /etc/systemd/system/mpris-proxy.service
+[Unit]
+Description=Bluetooth MPRIS proxy
+Wants=network-online.target
+After=dbus.target bluealsa.service
+
+[Service]
+Type=simple
+Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/dbus/system_bus_socket
+ExecStart=/usr/bin/mpris-proxy
+StandardOutput=journal
+Restart=always
+RestartSec=5
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
 # ALSA settings
 sed -i.orig 's/^options snd-usb-audio index=-2$/#options snd-usb-audio index=-2/' /lib/modprobe.d/aliases.conf
 
@@ -79,6 +98,7 @@ systemctl daemon-reload
 systemctl enable bt-agent@hci0.service
 systemctl enable bluealsa
 systemctl enable bluealsa-aplay
+systemctl enable mpris-proxy
 
 # Bluetooth udev script
 cat <<'EOF' > /usr/local/bin/bluetooth-udev
