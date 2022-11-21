@@ -16,8 +16,6 @@ cd ..
 
 if [ -d "bluealsa" ]; then
     apt install -y --no-install-recommends alsa-utils bluez-tools libasound2 libbluetooth3 libglib2.0-0 libsbc1 libdbus-1-3 libopenaptx0 libfdk-aac2
-    sed -i 's ^ExecStart=[A-Za-z0-9_/-]* ExecStart=/usr/bin/bluealsa-aplay g' bluealsa/usr/lib/systemd/system/bluealsa-aplay.service
-    sed -i 's ^ExecStart=[A-Za-z0-9_/-]* ExecStart=/usr/bin/bluealsa g' bluealsa/usr/lib/systemd/system/bluealsa.service
     cp -r bluealsa/* /
 else
     apt install -y --no-install-recommends alsa-utils bluez-tools git automake build-essential libtool pkg-config python3-docutils
