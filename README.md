@@ -36,12 +36,6 @@ Devices like phones, tablets and computers can play audio via this receiver.
 
 **Again: do not try to use the internal Bluetooth chip, this will only bring you many hours of frustration.**
 
-## ⚠️ A note on Raspberry Pi OS 10 (Legacy)
-
-The current version of Raspberry Pi OS (2022-01-28) is based on Debian 11 (Bullseye). This version does not contain the BlueALSA package (`bluealsa`) anymore. This repository now uses PulseAudio instead of ALSA. This may or may not work on slower devices like Raspberry Pi 1 and Raspberry Pi Zero.
-
-For these devices, you might want to try [HiFiBerryOS](https://github.com/hifiberry/hifiberry-os/) for similar functionality or stick with the `debian-10` branch, which works with the "Raspberry Pi OS (Legacy)".
-
 ## Installation
 
 The installation script asks whether to install each component.
