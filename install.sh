@@ -107,8 +107,29 @@ KillSignal=SIGUSR1
 [Install]
 WantedBy=multi-user.target
 EOF
+
+    sudo tee /etc/systemd/system/mpris-proxy.service >/dev/null <<'EOF'
+[Unit]
+Description=Bluetooth MPRIS proxy
+Wants=network-online.target
+After=dbus.target bluealsa.service
+
+[Service]
+Type=simple
+Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/dbus/system_bus_socket
+ExecStart=/usr/bin/mpris-proxy
+StandardOutput=journal
+Restart=always
+RestartSec=5
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
     sudo systemctl daemon-reload
     sudo systemctl enable bt-agent@hci0.service
+    sudo systemctl enable mpris-proxy
 
     # Bluetooth udev script
     sudo tee /usr/local/bin/bluetooth-udev >/dev/null <<'EOF'
