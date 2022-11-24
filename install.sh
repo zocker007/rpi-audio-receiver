@@ -127,6 +127,25 @@ TimeoutStopSec=10
 WantedBy=multi-user.target
 EOF
 
+    sudo tee /etc/dbus-1/system.d/mpris-proxy.conf >/dev/null <<'EOF'
+<!-- Root can control everything on system MBUS. -->
+
+<!DOCTYPE busconfig PUBLIC "-//freedesktop//DTD D-BUS Bus Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/dbus/1.0/busconfig.dtd">
+<busconfig>
+
+  <policy user="root">                                    
+    <!-- Allow everything to be sent -->                        
+    <allow send_destination="*" eavesdrop="true"/>              
+    <!-- Allow everything to be received -->                    
+    <allow eavesdrop="true"/>                                
+    <!-- Allow anyone to own anything -->             
+    <allow own="*"/>                                  
+  </policy>      
+
+</busconfig>
+EOF
+
     sudo systemctl daemon-reload
     sudo systemctl enable bt-agent@hci0.service
     sudo systemctl enable mpris-proxy
