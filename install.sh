@@ -47,36 +47,6 @@ install_bluetooth() {
     sudo apt update
     sudo apt install -y --no-install-recommends bluez-tools bluez-alsa-utils
 
-    read -p "Do you want to install Bluetooth Audio (ALSA) with custom build? [y/N] " REPLY
-    if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then return; fi
-
-    echo "In the following, bluez-alsa (https://github.com/Arkq/bluez-alsa.git) will be build from source."
-    echo "Whren a chroot'ed installation of bluez-alsa in ../bluealsa/ that was build on a remote machine is detected this script continues without building from source."
-    echo "Instructions on how to build from source can be found here: https://github.com/Arkq/bluez-alsa/wiki/Installation-from-source."
-
-    cd ..
-
-    if [ -d "bluealsa" ]; then
-        sudo apt install -y --no-install-recommends libasound2 libbluetooth3 libglib2.0-0 libsbc1 libdbus-1-3 libopenaptx0 libfdk-aac2
-        sudo cp -r bluealsa/* /
-    else
-        sudo apt-get install -y --no-install-recommends git automake build-essential libtool pkg-config python3-docutils
-        sudo apt install -y libasound2-dev libbluetooth-dev libdbus-1-dev libglib2.0-dev libsbc-dev libopenaptx-dev libfdk-aac-dev
-
-        git clone https://github.com/Arkq/bluez-alsa.git
-        cd bluez-alsa
-
-        autoreconf --install --force
-        mkdir build
-        cd build
-        ../configure --enable-aac --enable-aptx --enable-aptx-hd --with-libopenaptx --enable-faststream --enable-systemd --enable-upower \
-        --with-systemdbluealsaargs="-p a2dp-sink --a2dp-force-audio-cd --a2dp-volume --codec=aptX --codec=aptX-HD --codec=FastStream --xapl-resp-name=<devicename>" \
-        --with-systemdbluealsaaplayargs="--single-audio --pcm=hw:0\,0 --mixer-device=hw:0 --mixer-name=Master" \
-        --with-bluealsauser=bluealsa --with-bluealsaaplayuser=bluealsa
-        make -j4
-        sudo make install
-    fi
-
     # Bluetooth settings
     sudo tee /etc/bluetooth/main.conf >/dev/null <<'EOF'
 [General]
