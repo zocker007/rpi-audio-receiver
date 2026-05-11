@@ -116,6 +116,18 @@ EOF
 </busconfig>
 EOF
 
+    sudo tee /etc/systemd/system/bluealsa.service.d/override.conf >/dev/null <<'EOF'
+[Service]
+ExecStart=
+ExecStart=/usr/bin/bluealsa -S --keep-alive=10 -p a2dp-sink --a2dp-force-audio-cd --a2dp-volume -c aptX -c aptX-HD -c FastStream -c Opus --initial-volume=20
+EOF
+
+    sudo tee /etc/systemd/system/bluealsa-aplay.service.d/override.conf >/dev/null <<'EOF'
+[Service]
+ExecStart=
+ExecStart=/usr/bin/bluealsa-aplay -S --single-audio --pcm=hw:RPiAmpDSPTop,0 --volume=software
+EOF
+
     sudo systemctl daemon-reload
     sudo systemctl enable bt-agent@hci0.service
     sudo systemctl enable mpris-proxy

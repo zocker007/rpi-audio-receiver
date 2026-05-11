@@ -9,10 +9,10 @@ You can download bluez-alsa sources from https://github.com/Arkq/bluez-alsa.git 
     INSTALLROOT=$HOME/bluealsa
     mkdir -p $INSTALLROOT
     ../configure --with-systemdsystemunitdir=$INSTALLROOT/usr/lib/systemd/system --with-dbusconfdir=$INSTALLROOT/etc/dbus-1/system.d \
-    --with-alsaplugindir=$INSTALLROOT/usr/lib/aarch64-linux-gnu/alsa-lib --with-alsaconfdir=$INSTALLROOT/etc/alsa/conf.d --enable-aac --enable-aptx --enable-aptx-hd \
-    --with-libopenaptx --enable-faststream --enable-systemd --with-systemdbluealsaargs="-p a2dp-sink --a2dp-force-audio-cd --a2dp-volume --codec=aptX \
-    --codec=aptX-HD --codec=FastStream --initial-volume=20"  --with-systemdbluealsaaplayargs="--single-audio --pcm=hw:<alsacardname>\,0 --mixer-device=hw:<alsacardname> \
-    --mixer-name=Master" --with-bluealsauser=bluealsa --with-bluealsaaplayuser=bluealsa
+    --with-alsaplugindir=$INSTALLROOT/usr/lib/aarch64-linux-gnu/alsa-lib --with-alsaconfdir=$INSTALLROOT/etc/alsa/conf.d --enable-aac --enable-aptx --enable-aptx-hd --enable-opus \
+    --with-libopenaptx --enable-faststream --enable-systemd --with-systemdbluealsaargs="-p a2dp-sink --a2dp-force-audio-cd --a2dp-volume --codec=aptX -c aptX-HD -c FastStream -c Opus \
+    --codec=aptX-HD --codec=FastStream --initial-volume=20"  --with-systemdbluealsaaplayargs="--single-audio --pcm=hw:<alsacardname>\,0 --volume=mixer --mixer-device=hw:<alsacardname>" 
+    --with-bluealsauser=bluealsa --with-bluealsaaplayuser=bluealsa
     make -j4
     make install
     mkdir -p $INSTALLROOT/usr/bin
